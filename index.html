@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Display a map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.48.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.48.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        h2,
+h3 {
+  margin: 10px;
+  font-size: 1.2em;
+}
+
+h3 {
+  font-size: 1em;
+}
+
+p {
+  font-size: 0.85em;
+  margin: 10px;
+  text-align: left;
+}
+
+/**
+* Create a position for the map
+* on the page */
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+/**
+* Set rules for how the map overlays
+* (info box and legend) will be displayed
+* on the page. */
+.map-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.8);
+  margin-right: 20px;
+  font-family: Arial, sans-serif;
+  overflow: auto;
+  border-radius: 3px;
+}
+
+#features {
+  top: 0;
+  height: 100px;
+  margin-top: 20px;
+  width: 250px;
+}
+
+#legend {
+  padding: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  line-height: 18px;
+  height: 150px;
+  margin-bottom: 40px;
+  width: 200px;
+}
+
+.legend-key {
+  display: inline-block;
+  border-radius: 20%;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+}
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<div class='map-overlay' id='features'><h2>Aboriginal Population</h2><div id='pd'><p>Hover over a province!</p></div></div>
+<div class='map-overlay' id='legend'></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoic2F1bWllcmEiLCJhIjoiY2psMTk0dTVzMWRncDNxbDc0czIwbG5reSJ9.KLmT0PQv4Rvx9Y8PNb35lw';
+var map = new mapboxgl.Map({
+    container: 'map', // container id
+    style: 'mapbox://styles/marenab/cjl2oczit56x42rlxm5adlopg', // stylesheet locationmapbox://styles/marenab/cjl2oczit56x42rlxm5adlopg
+    center: [-74.50, 55], // starting position [lng, lat]
+    zoom: 3 // starting zoom
+});
+map.on('load', function() {
+
+var layers = ['1730-10000', '10000-50000', '50000-100000', '100000-150000', '150000+'];
+var colors = ['#FFEDA0', '#cfecd9', '#a0dab3', '#40b7c4', '#3195a0', '#253393'];
+
+for (i = 0; i < layers.length; i++) {
+  var layer = layers[i];
+  var color = colors[i];
+  var item = document.createElement('div');
+  var key = document.createElement('span');
+  key.className = 'legend-key';
+  key.style.backgroundColor = color;
+
+  var value = document.createElement('span');
+  value.innerHTML = layer;
+  item.appendChild(key);
+  item.appendChild(value);
+  legend.appendChild(item);
+}
+
+
+  // the rest of the code will go in here
+map.on('mousemove', function(e) {
+  var provinces = map.queryRenderedFeatures(e.point, {
+    layers: ['canada-pop']
+  });
+
+  if (provinces.length > 0) {
+    document.getElementById('pd').innerHTML = '<h3><strong>' + provinces[0].properties.NAME + '</strong></h3><p><strong><em>' + provinces[0].properties.aboriginal_pop + '<br/></strong>Aboriginal population</em></p>';
+  } else {
+    document.getElementById('pd').innerHTML = '<p>Hover over a province!</p>';
+  }
+});
+    
+
+
+
+});
+</script>
+
+</body>
+</html>
